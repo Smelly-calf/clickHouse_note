@@ -1,7 +1,5 @@
 # Privileges
-SHOW PRIVILEGES; 查看所有特权
-
-`select * from system.privileges where parent_group='ACCESS MANAGEMENT'` 查看某个组下面的特权
+`SHOW PRIVILEGES;` 查看所有特权
 
 PRIVILEGES 从低到高有7个等级：
 -  COLUMN: COLUMN 特权可以被授予 column, table, database, or globally

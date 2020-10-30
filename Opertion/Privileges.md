@@ -54,7 +54,7 @@ PRIVILEGES 从低到高有7个等级：
 
 `ENGINE = MySQL('host:port', 'database', 'table', 'user', 'password'[, replace_query, 'on_duplicate_clause'])`
 
-1、启动 mysql 客户端界面：`mysql -uroot`
+1、进入 mysql client 终端：`mysql -uroot`
 
 建表
 ```sql
@@ -70,7 +70,7 @@ CREATE TABLE `test`.`test` (
 insert into test (`int_id`, `float`) VALUES (1,2);
 ```
 
-2、启动 docker clickhouse client 界面：命令参考 `Introduction/docker_ck.md` 
+2、进入 docker clickhouse client 终端：命令参考 `Introduction/docker_ck.md` 
 
 建 clickhouse 表
 ```sql

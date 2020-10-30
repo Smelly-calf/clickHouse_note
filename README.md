@@ -3,7 +3,7 @@
 # Clickhouse 笔记
 https://clickhouse.tech/docs/en/
 ## Clickhouse 是什么？
-通俗来讲，Clickhouse 是一个<em><b>面向列的数据库管理系统</b></em>，用于 <em><b>OLAP：查询的在线分析处理</b></em>。
+通俗来讲，Clickhouse 是一个<em><b>面向列的数据库管理系统</b></em>，用于 <em><b>OLAP：查询的联机分析处理</b></em>。
 
 对于面向行的数据库管理系统来说，一行物理存储在一起。
 

@@ -9,14 +9,15 @@ docker run 会拉取镜像无需单独拉取
 1. `docker ps -a` 查看容器            
 2. `docker rm --force some-clickhouse-server` 强制删除已启动的容器  
 3. `mkdir -p $HOME/some_clickhouse_server` 创建挂载目录
-4. 启动时挂载目录失败 `-v $HOME/some_clickhouse_server/conf:/etc/clickhouse-server`
+4. 启动时挂载目录 `-v $HOME/some_clickhouse_server/conf:/etc/clickhouse-server` 失败
    
-   先 run 之后运行 
+   先去掉该参数启动容器，先复制一份到宿主机 然后再挂载启动
    `docker cp -a some-clickhouse-server:/etc/clickhouse-server $HOME/some_clickhouse_server/`
-5. `docker run -d --name some-clickhouse-server --ulimit nofile=262144:262144 --volume=$HOME/some_clickhouse_server/clickhouse-server:/etc/clickhouse-server --volume=$HOME/some_clickhouse_server/data:/var/lib/clickhouse yandex/clickhouse-server`
+5. 启动并指定挂载目录：`docker run -d --name some-clickhouse-server --ulimit nofile=262144:262144 --volume=$HOME/some_clickhouse_server/clickhouse-server:/etc/clickhouse-server --volume=$HOME/some_clickhouse_server/data:/var/lib/clickhouse yandex/clickhouse-server`
    
    `docker inspect -f "{{.Mounts}}" some-clickhouse-server` 查看容器挂载目录
-6. 修改配置：default SQL-driven 执行权限，config.xml -> access_control_path，users.xml -> access_management=1: enable access_management
+   
+6. 修改挂载目录下配置文件：开启 default 账号 SQL 执行权限，config.xml -> access_control_path，users.xml -> access_management=1: enable access_management
 7. `docker restart some-clickhouse-server` 重启容器服务
 8. `docker exec -it some-clickhouse-server /bin/bash` 进入容器
 9. `clickhouse-client` 进入交互式终端

@@ -223,7 +223,7 @@ $ docker-compose ps
 # 检查ck集群是否创建成功（这里预配置的是perftest_3shards_1replicas）
 $ docker exec clusters_clickhouse02_1  clickhouse-client --query "select * from system.clusters"
 ```
- 
+ 跑官方的例子: https://clickhouse.tech/docs/en/getting-started/example-datasets/
    
 ## Q&A
 1、docker container 容器无法停止：

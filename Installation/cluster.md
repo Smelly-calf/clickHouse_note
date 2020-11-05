@@ -89,8 +89,6 @@ docker cp zkui zkui:/
 # 进入容器后执行
 cd zkui
 mvn clean install
-
-
 ```
     
 访问 `localhost:9090 ` 确认。
@@ -199,10 +197,11 @@ docker restart zkui
 
 4、连接 clickhouse 集群
     ```
-    # 方法1：进入交互终端，> clickhouse-client 
+    # 方法1：从 server 端进入交互终端
     docker exec -it container /bin/bash;exit 
-    # 方法2：使用单独的客户端连接
-    docker run -it --rm --link ckcluster_1:ckcluster yandex/clickhouse-client --host ckcluster_1
+    > clickhouse-client 
+    # 方法2：从 client 端进入交互终端
+    docker run -it --rm --link ckcluster_1:ckcluster_1 yandex/clickhouse-client --host ckcluster_1
     ```
    
    终端输入：查看集群信息
@@ -210,6 +209,21 @@ docker restart zkui
    > select * from system.clusters;
    ```
    
+   
+## 方案二：docker-compose 自动化
+ 下载项目根目录下的 ckcluster-docker-compose.tar.xz
+ 
+ 解压后直接启动
+ ```
+$ cd test-ck-cluster
+# 启动ck集群（包括zk服务）
+$ docker-compose up -d
+# 检查是否都已经启动
+$ docker-compose ps
+# 检查ck集群是否创建成功（这里预配置的是perftest_3shards_1replicas）
+$ docker exec clusters_clickhouse02_1  clickhouse-client --query "select * from system.clusters"
+```
+ 
    
 ## Q&A
 1、docker container 容器无法停止：

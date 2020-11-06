@@ -211,10 +211,11 @@ docker restart zkui
    
    
 ## 方案二：docker-compose 自动化
- 下载项目根目录下的 ckcluster-docker-compose.tar.xz
+ 下载本项目 Packages 目录软件包一键安装： ckcluster-docker-compose.tar.xz
  
  解压后直接启动
  ```
+$ tar axvf testck.tar.xz
 $ cd test-ck-cluster
 # 启动ck集群（包括zk服务）
 $ docker-compose up -d

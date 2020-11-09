@@ -222,8 +222,14 @@ $ docker-compose up -d
 # 检查是否都已经启动
 $ docker-compose ps
 # 检查ck集群是否创建成功（这里预配置的是perftest_3shards_1replicas）
-$ docker exec clusters_clickhouse02_1  clickhouse-client --query "select * from system.clusters"
+# docker exec [OPTIONS] CONTAINER COMMAND [ARG...]
+$ docker exec clusters_clickhouse02_1 clickhouse-client --query "select * from system.clusters"
 ```
+终端模式：
+```
+docker exec -it testck_clickhouse01_1 clickhouse-client -h 127.0.0.1 /bin/bash
+```
+
  跑官方的例子: https://clickhouse.tech/docs/en/getting-started/example-datasets/
    
 ## Q&A
@@ -234,5 +240,14 @@ $ docker exec clusters_clickhouse02_1  clickhouse-client --query "select * from 
    `docker logs -f clickhouse-server2` 查看日志：Error response from daemon: can not get logs from container which is dead or marked for removal
    
    解决：重启 docker (Docker for Mac Desktop 直接从 Docker 菜单栏 Quit，重启后删除废弃的容器即可)
-   
+
+2、docker-compose down/stop CONTAINER_ID Error: device is busy
+ 
+```
+Error response from daemon: Driver devicemapper failed to remove root filesystem 5b47acf5aa48c43d617747b007cff50f7ea042b66dab3a32eeb0c86b13efa41c: Device is Busy
+``` 
+
+尝试强制终止：`docker rm --force CONTAINER` 发现可以生效，重启正常了。
+
+具体原因待再排查。
    

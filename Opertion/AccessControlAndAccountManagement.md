@@ -3,7 +3,7 @@ ClickHouse 支持基于 RBAC 方法的访问控制管理。
 
 https://clickhouse.tech/docs/en/operations/access-rights/
 
-## 可授权的实体包括
+## 权限包括5种
 - User account
 - Role
 - Row Policy
@@ -11,8 +11,10 @@ https://clickhouse.tech/docs/en/operations/access-rights/
 - Quota
 
 两种设置访问实体的方式：
-- <em><b>SQL-driven 驱动的方式</b></em>（手动 enable: 1. access_control_path 指定访问实体配置的存储路径；2. enable SQL-driven -> access_management 设置为 1）
+- <em><b>SQL-driven 驱动的方式</b></em>（需要手动开启: 1. access_control_path 指定访问实体配置的存储路径；2. enable SQL-driven -> access_management 设置为 1）
 - config.xml 和 users.xml 服务器的配置文件
+
+CK 默认提供 `default` 账号，拥有所有权限但无法使用 SQL-driven 控制权限和账号，登录客户端/分布式查询场景未指定账号默认用`default`.
 
 ## 特性
 - 可以授予权限给不存在的库表
@@ -23,19 +25,32 @@ https://clickhouse.tech/docs/en/operations/access-rights/
 ## User Account
 账号是一个可授予权限的实体，一个账号包含：
 - 认证信息
-- 定义用户可执行的查询范围的 privileges
-- 允许连接ClickHouse服务器的hosts
+- 定义用户可执行的查询范围的 privileges： https://clickhouse.tech/docs/en/sql-reference/statements/grant/#grant-privileges
+- 允许连接ClickHouse服务器的 hosts
 - Assigned and default roles.
-- 用户登录时默认应用设置及其约束
+- 用户登录时默认约束.
 - 分配的 profiles 设置.
 
-`GRANT {privilege} ON db.table TO {user} [WITH GRANT OPTION] ` 查询语句授予账号privileges
+Privilege Levels (from lower to higher):
 
-`REVOKE {privilege} ON db.table FROM {user}` 查询语句收回账号的privileges
+- COLUMN — Privilege can be granted for column, table, database, or globally.
+- TABLE — Privilege can be granted for table, database, or globally.
+- VIEW — Privilege can be granted for view, database, or globally.
+- DICTIONARY — Privilege can be granted for dictionary, database, or globally.
+- DATABASE — Privilege can be granted for database or globally.
+- GLOBAL — Privilege can be granted only globally.
+- GROUP — Groups privileges of different levels. When GROUP-level privilege is granted, only that privileges from the group are granted which correspond to the used syntax.
 
-`REVOKE [ADMIN OPTION FOR] {role} FROM {user}` query 收回账号的角色（ROLE ADMIN特权允许用户分配和撤消任何角色，包括未使用admin选项分配给该用户的角色）
 
-`SHOW GRANTS [FOR user]` list一个用户所有privileges.
+创建账号后默认没有以下权限:
+
+`GRANT {privilege} ON db.table TO {user} [WITH GRANT OPTION]` 授予账号某DB的权限或者
+
+`REVOKE {privilege} ON db.table FROM {user}` 收回账号的privileges
+
+`REVOKE [ADMIN OPTION FOR] {role} FROM {user}` query 收回账号的角色（ROLE ADMIN 特权允许用户分配和撤消任何角色，包括未使用admin选项分配给该用户的角色）
+
+`SHOW GRANTS [FOR user]` list 一个用户所有 privileges.
 
 
 管理的查询语句：
@@ -84,7 +99,7 @@ Management queries:
 - SHOW POLICIES
 
 ## Settings Profile
-settings profile 是一个settings集合，包含配置和约束以及应用的roles/users列表.
+settings profile 是一系列setting的集合，包含配置和约束以及生效的的roles/users列表.
 
 Management queries:
 - CREATE SETTINGS PROFILE
@@ -105,3 +120,4 @@ Management queries:
 - SHOW CREATE QUOTA
 - SHOW QUOTA
 - SHOW QUOTAS
+

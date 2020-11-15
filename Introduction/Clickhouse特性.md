@@ -1,4 +1,7 @@
 # ClickHouse 的特性
+
+https://clickhouse.tech/docs/en/introduction/distinctive-features/
+
 ## 一、存储方面：
 ### 真正的面向列的数据管理系统
 ### 使用数据压缩  

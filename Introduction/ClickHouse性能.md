@@ -1,4 +1,7 @@
 # ClickHouse 性能
+
+https://clickhouse.tech/docs/en/introduction/performance/
+
 ## 单个查询吞吐量
 单个查询吞吐量=每秒返回的行数/MB。
 

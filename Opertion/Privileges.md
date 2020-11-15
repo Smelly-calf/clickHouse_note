@@ -1,19 +1,25 @@
 # Privileges
-SHOW PRIVILEGES; 查看所有特权
+`SHOW PRIVILEGES;` 查看所有特权
 
-`select * from system.privileges where parent_group='ACCESS MANAGEMENT'` 查看某个组下面的特权
+权限根据常用操作类型可以划分为8大组：SELECT、INSERT、CREATE、ALTER、DROP、SHOW、SYSTEM、SOURCES
 
-PRIVILEGES 从低到高有7个等级：
--  COLUMN: COLUMN 特权可以被授予 column, table, database, or globally
--  TABLE
--  VIEW: view, database, or globally
--  DICTIONARY: dictionary, database, or globally.
--  DATABASE
--  GLOBAL: only globally
--  GROUP: 不同级别的特权会被分组，授予组级别的特权只会拥有该组下的特权 `GRANT SOURCES ON db.table TO user`  
-    
-`select * from system.privileges where parent_group='ACCESS MANAGEMENT'` 查看ACCESS MANAGEMENT组下面的特权：
+根据操作粒度划分为7个等级：
 
+- COLUMN: 最小级别的权限
+- TABLE: 表权限
+- VIEW: view权限
+- DICTIONARY: 字典权限
+- DATABASE: 库权限
+- GLOBAL: 如 `CREATE USER` 是 GLOBAL 级别的权限
+- GROUP: 授予组权限 `GRANT SOURCES ON db.table TO user` 
+查询某权限的级别：
+```
+select * from system.privileges where privilege='CREATE USER';
+```
+查看某个组的所有权限： 
+`select * from system.privileges where parent_group='ACCESS MANAGEMENT'` 
+
+ACCESS MANAGEMENT 组下面的权限：
 - ACCESS MANAGEMENT （level: GLOBAL）
     - CREATE USER
     - ALTER USER
@@ -54,7 +60,7 @@ PRIVILEGES 从低到高有7个等级：
 
 `ENGINE = MySQL('host:port', 'database', 'table', 'user', 'password'[, replace_query, 'on_duplicate_clause'])`
 
-1、启动 mysql 客户端界面：`mysql -uroot`
+1、进入 mysql client 终端：`mysql -uroot`
 
 建表
 ```sql
@@ -70,7 +76,7 @@ CREATE TABLE `test`.`test` (
 insert into test (`int_id`, `float`) VALUES (1,2);
 ```
 
-2、启动 docker clickhouse client 界面：命令参考 `Introduction/docker_ck.md` 
+2、进入 docker clickhouse client 终端：命令参考 `Introduction/docker_ck.md` 
 
 建 clickhouse 表
 ```sql

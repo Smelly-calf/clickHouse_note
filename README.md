@@ -1,5 +1,11 @@
 # clickHouse_note
-
+学习顺序
+```
+- 1.README   // clickhouse是什么
+- 2.Installation // 简单的3台clickhouse集群搭建
+- 3.Interfaces // clickhouse接口 -> clickhouse第三方工具
+- 4.Engines // clickhouse MergeTree 系列引擎原理
+```
 # Clickhouse 笔记
 https://clickhouse.tech/docs/en/
 ## Clickhouse 是什么？
@@ -36,7 +42,10 @@ OLAP 场景的关键特性：
     - 每个查询是<em><b>只有一张大表</b></em>和多个小表的关联；
     - 查询结果远小于源数据，查询结果在单个服务器的 RAM 中就可以存下。
 
-面向列的数据库更适用于 OLAP场景（at least 100 times faster in processing most queries）：
+<br><br>
+面向列的数据库更适用于 OLAP场景的原因：
+
+（at least 100 times faster in processing most queries）
 - I/O：
     - <em><b>只读取想要的列</b></em>，读取 100 列中的 5 列可以减少 20 倍的 I/O；
     - <em><b>以数据包的形式读取，易于压缩</b></em>，显著减少 I/O 数量；

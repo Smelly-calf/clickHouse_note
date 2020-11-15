@@ -67,15 +67,16 @@ Example of a config file:
 - 任何语言任何平台都可以通过 HTTP 访问 ClickHouse
 - ClickHouse默认的HTTP监听端口：<em>8123</em>
 - `curl 'http://localhost:8123/'` 返回 OK, 见配置`<http_server_default_response>`
-- 健康检查接口：`curl 'http://localhost:8123/ping''`
+- 健康检查接口：` curl 'http://localhost:8123/ping' `
+
 #### 使用 HTTP 请求 CH Server
 - URL 大小不超过16KB
 - 默认format:`TabSeparated`，指定Format: URL参数`default_format`或Header:`X-ClickHouse-Format`
-- GET 请求：query使用URL参数发送，GET请求是 readonly, 修改数据只能用POST. `curl 'http://localhost:8123/?query=SELECT%201'`
-- POST 请求：query使用URL参数或者 POST body `echo 'SELECT 1' | curl 'http://localhost:8123/' --data-binary @-`
+- GET 请求：URL参数query发送查询语句，GET请求是 readonly, 修改数据只能用POST. `curl 'http://localhost:8123/?query=SELECT%201'`
+- POST 请求：query使用URL参数或者 body `echo 'SELECT 1' | curl 'http://localhost:8123/' --data-binary @-`
     - --data-binary key=value
     
-        HTTP POST请求中的数据为纯二进制数据
+        指定请求中的数据为纯二进制数据
         value如果是@file_name，则保留文件中的回车符和换行符，不做任何转换
 - 压缩：压缩程序`clickhouse-compressor`
     - 开启CH compression压缩：` http_native_compression_disable_checksumming_on_decompress`
@@ -104,25 +105,26 @@ Example of a config file:
 - 其他参数：参见 SET 小节
    - 本机 TCP 接口, 更少的开销
         - Command-line CLient、服务器之间、C++程序的接口
-        - 暂无正是规范，可从源码进行反向工程或拦截分析TCP流量获取
-- session：GET请求添加参数`session_id`，可以是任何字符串。
-    - session_timeout: 默认一个Session保持60s终止，在服务端配置`default_session_timeout`修改，或GET参数`session_timeout`  
-    - session_check: 参数 `session_check=1` 用于检查session状态
+        - 暂无正式规范，可从源码进行反向工程或拦截分析TCP流量获取
+- session：参数：`session_id`，可以是任何字符串
+    - session_timeout: 默认一个Session保持60s终止，在服务端配置`default_session_timeout`修改，或GET参数`session_timeout`显式指定  
+    - session_check: 参数 `session_check=1` 开启session状态检查
     - 一个query同时只能在一个session被执行
-- 查询进度 `X-ClickHouse-Progress`：响应头参数`X-ClickHouse-Progress`用于接收查询进度信息，需要开启 `send_progress_in_http_headers`
-- query_id: 使用`query_id`参数作为查询ID传递，避免HTTP查询丢失；The section “Settings, replace_running_query”.
+- 查询进度：参数：`X-ClickHouse-Progress`，接收查询进度信息，需要在服务端开启 `send_progress_in_http_headers`
+- query_id: 使用`query_id`作为查询ID传递，避免HTTP查询丢失；The section “Settings, replace_running_query”.
 - quota_key: quota密钥；The section “Quotas”.
 - 外部数据/临时表: HTTP接口允许传递外部数据/外部临时表；The section “External data for query processing”.
 
 #### 响应缓冲
-URL参数`buffer_size` 和 `wait_end_of_query` 用于响应缓冲
-- `buffer_size`: 服务器内存缓存字节数
-- `wait_end_of_query=1`: 超过缓存的部分会被缓存到临时服务器文件中
-使用缓冲避免处理query过程中的错误，错误会写在响应正文的末尾，客户端只有在解析时检测到错误。
+可以在服务端对响应进行缓冲
+- `buffer_size`: 服务器内存 缓存字节数
+- `wait_end_of_query=1`: 开启wait_end_of_query后，超过缓存的部分会被缓存到服务器临时文件中
+使用缓冲可避免处理query过程中的错误，错误会写在响应正文的末尾，客户端只有在解析时检测到错误。
  
 #### 预定义 HTTP 接口
+可以在服务端预定义 HTTP 接口。
 
-Section in Configuration file:
+在`http_handlers`小节中进行配置:
 ```
 <http_handlers>
     <rule>
@@ -160,26 +162,8 @@ mysql --protocol tcp -u default -P 9004
 ```
 使用double SHA1 密码兼容 MySQL 客户端连接，其他密码可能无法通过验证。
    
-## Yandex官方建议和支持的连接方式
-   大多数情况下建议使用工具或库代替直接连接，Yandex官方支持的工具：
-- [Command-line client](https://clickhouse.tech/docs/en/interfaces/cli/)
-- JDBC驱动: 官方驱动、第三方：ClickHouse-Native-JDBC; clickhouse4j
-- ODBC驱动: official driver
-- C++ 客户端库：[ clickhouse-cpp](https://github.com/ClickHouse/clickhouse-cpp)
-- 第三方接口：命令行终端、可视化界面、API
-    - [Client libraries](https://clickhouse.tech/docs/en/interfaces/third-party/client-libraries/) 
-    - [Integrations](https://clickhouse.tech/docs/en/interfaces/third-party/integrations/) 
-    - [GUI可视化界面](https://clickhouse.tech/docs/en/interfaces/third-party/gui/) 
-    - [Proxies代理](https://clickhouse.tech/docs/en/interfaces/third-party/proxy/)
-        - [chproxy](https://github.com/Vertamedia/chproxy) ：HTTP代理 和 CH Database负载均衡器
-            
-            特性：用户路由(根据输入用户将请求代理到不同CH集群、映射虚拟和真实CH用户)和响应缓存、灵活的限制、自动SSL证书续订、用Go实现。
-            
-            出现的原因：解决`max_execution_time`的bug 和 `max_concurrent_queries` 只能限制单节点bug
-            
-            实现：两个http代理，1. 传播INSERT到集群节点；2. 发送 SELECT 请求到专用的节点
-            
-           
-
+## 第三方接口
+- [chproxy](chproxy.md)
+- [Grafana](Grafana.md)
  
       

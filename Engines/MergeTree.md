@@ -99,11 +99,11 @@ INSERT INTO mr_test VALUES(12,'2020-12-01 00:00:00'),(13,'2020-12-02 00:00:00'),
                           (22,'2020-12-11 00:00:00'); 
 ```
 看看数据存储 `/var/lib/clickhouse下：/data/default/mr_test`
-![data_part](data_part.png) 
+![data_part](illstration/data_part.png) 
 不同分区（此处是月份）的数据分为了两个 data part 存储。
 
 分区里面的数据：
-![a_data_part_data](partition_files.png)
+![a_data_part_data](illstration/partition_files.png)
 - primary.idx：该 part 所有颗粒第一行的主键值标记
 - count.txt：该 part 行数
  

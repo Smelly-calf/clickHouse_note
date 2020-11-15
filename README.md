@@ -1,5 +1,11 @@
 # clickHouse_note
-
+学习顺序
+```
+- 1.README   // clickhouse是什么
+- 2.Installation // 简单的3台clickhouse集群搭建
+- 3.Interfaces // clickhouse接口 -> clickhouse第三方工具
+- 4.Engines // clickhouse MergeTree 系列引擎原理
+```
 # Clickhouse 笔记
 https://clickhouse.tech/docs/en/
 ## Clickhouse 是什么？

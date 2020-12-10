@@ -223,7 +223,7 @@ $ docker-compose up -d
 $ docker-compose ps
 # 检查ck集群是否创建成功（这里预配置的是perftest_3shards_1replicas）
 # docker exec [OPTIONS] CONTAINER COMMAND [ARG...]
-$ docker exec clusters_clickhouse02_1 clickhouse-client --query "select * from system.clusters"
+$ docker exec testck_clickhouse01_1 clickhouse-client --query "select * from system.clusters"
 ```
 终端模式：
 ```

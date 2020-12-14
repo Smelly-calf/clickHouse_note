@@ -16,7 +16,7 @@ MergeTree家族的引擎们设计的主旨是将大量数据快速插入表中�
     如有必要，可以在表中设置数据采样方法。
     
     
-#### 建表
+### 建表
 ```
 CREATE TABLE [IF NOT EXISTS] table_name [ON CLUSTER cluster_name]
 (
@@ -53,7 +53,7 @@ ORDER BY expr
     说明：1. 分区：使用`toYYYYMM`达到按月分区的目的，2. 采样：对 UserID 做 hash 作为采样，相当于对 CounterID 和 EventDate 作了伪随机，CH 会 平均伪随机 的返回 User 子集的样本。 3. `index_granularity`默认就是8192，此处可省略。
     
     
-#### 数据存储
+### 数据存储
 一个表由 <em>按主键排序好</em> 的 <em>data parts</em> 组成。
 
 - data part：插入数据时会创建独立的 data part，每个 data part 按主键以字典形式排序。以 `(CounterID, Date)` 主键为例，part中的数据先按照 `CounterID` 排序，`CounterId`相同的按`Date`排序。
@@ -114,7 +114,7 @@ INSERT INTO mr_test VALUES(12,'2020-12-01 00:00:00'),(13,'2020-12-02 00:00:00'),
 - xx.bin //列向量
 - xx.mrk2 //mark值和列的映射 
  
-#### 主键和索引
+### 主键和索引
 CH <em>根据主键来建立索引 marks</em>，索引粒度由 `index_granularity`和`index_granularity_bytes`设置，表示两个索引之间的行数/字节数。
 
 如下图是主键为 (CounterID, Date) 索引粒度为 7 的索引标记图：
@@ -146,7 +146,7 @@ CH命中索引标记的场景：WHERE/PREWHERE的每个子句(非AND连接的子
    
 分析CH查询时是否命中索引：开启`force_index_by_date`和`force_primary_key`，以及查询计划 trace log 工具。
 
-#### 主键的选择
+#### 选取主键
 CH 主键没有列数的要求，需要根据具体的数据结构决定主键列的选择，原则：
 - 提高查询性能：如主键(a,b)添加一列c可以提高查询条件包含c的查询性能
 - 利用主键排序提高数据一致性从而提升压缩性能
@@ -238,21 +238,21 @@ SELECT count() FROM table_name WHERE u64 * i32 == 10 AND u64 * length(s) >= 1234
 
 todo TTL for Columns and Tables
 
-#### 小结
+### 小结
 MergeTree 系列引擎是CH功能最强大最健壮的表引擎，
-##### 特性：
+#### 特性：
 - Primary key 排序存储数据，稀疏索引快速定位数据位置
 - partition 分区
 - sample 采样: 主键必须包含sample key
 
-##### 存储：
+#### 存储：
 - part
     - primary.idx // 该part所有index
     - bin // 数据
     - 列名.mrk // 每一列的标注
     - minmax_partition.idx // 最小最大分区键索引 
 
-##### 索引类型：
+#### 主键选取和索引：
 todo
 
 ##### 今日讨论：

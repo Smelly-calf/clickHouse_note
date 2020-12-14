@@ -234,17 +234,20 @@ todo TTL for Columns and Tables
 
 #### 小结
 MergeTree 系列引擎是CH功能最强大最健壮的表引擎，
-特性：
+##### 特性：
 - Primary key 排序存储数据，稀疏索引快速定位数据位置
 - partition 分区
 - sample 采样: 主键必须包含sample key
 
-存储：
+##### 存储：
 - part
     - primary.idx // 该part所有index
     - bin // 数据
     - 列名.mrk // 每一列的标注
     - minmax_partition.idx // 最小最大分区键索引 
+
+##### 索引类型：
+[Skipping Indexes](#Skipping Indexes)
 
 ##### 今日讨论：
 CK数据块划分跟粒度是否有关？

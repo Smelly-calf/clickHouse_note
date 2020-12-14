@@ -67,4 +67,4 @@ OLAP 场景的关键特性：
 #### 学习进度表
 | 周 | 日期 |大标题 | 小标题 | 进度 |  小结 |
 | --- | --- | --- | --- | --- | --- |
-| 2020年50周 | 12.7 ~ 12.13 | MergeTree | 索引 | 90% | [MergeTree索引类型](Engines/MergeTree.md) | 
+| 2020年50周 | 12.7 ~ 12.13 | MergeTree | 索引 | 90% | [MergeTree索引类型](Engines/MergeTree.md#skipping-indexes) | 

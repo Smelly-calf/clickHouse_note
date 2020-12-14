@@ -247,7 +247,7 @@ MergeTree 系列引擎是CH功能最强大最健壮的表引擎，
     - minmax_partition.idx // 最小最大分区键索引 
 
 ##### 索引类型：
-[Skipping Indexes](#Skipping Indexes)
+todo
 
 ##### 今日讨论：
 CK数据块划分跟粒度是否有关？

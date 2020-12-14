@@ -167,18 +167,22 @@ INDEX index_name expr TYPE type(...) GRANULARITY granularity_value
 - granularity_value: 索引的颗粒大小
 - 索引 type:
     - primary key 
+    
       支持的函数子集：equals, notEquals, like, notLike, startsWith, in, notIn, less, greater, lessOrEquals, greaterOrEquals, empty, notEmpty
       
       不支持的函数子集：endsWith, multiSearchAny, hasToken 
     - minmax
+    
       索引存储表达式的最值
       
       不支持的函数：endsWith, multiSearchAny, hasToken ，同 primary key
     - set(max_rows)
+    
       存储表达式的唯一值，不超过 max_rows 行
       
       支持所有函数
     - ngrambf_v1(n, size_of_bloom_filter_in_bytes, num_of_hash_functions, random_seed)
+    
       存储一个布隆过滤器，该布隆过滤器包含数据块中所有ngrams。
       
       只对 strings 起作用，优化 equals,like,in 表达式。
@@ -193,12 +197,14 @@ INDEX index_name expr TYPE type(...) GRANULARITY granularity_value
       
       特殊：函数参数小于 ngram 大小的常量，不会使用 ngrambf_v1 优化查询。
     - tokenbf_v1(size_of_bloom_filter_in_bytes, num_of_hash_functions, random_seed)
+    
       和 ngrambf_v1相同，但存储的是token而不是ngram，token是非字母数字字符分隔的序列
       
       不支持 multiSearchAny, less, greater, lessOrEquals, greaterOrEquals, empty, notEmpty
       
       支持 hasToken
     - bloom_filter([false_positive])
+    
       可选参数false_positive表示从布隆过滤器接收误报的可能性，可能的值在(0,1)区间，默认值是 0.025.
       
       支持的数据类型：Int*, UInt*, Float*, Enum, Date, DateTime, String, FixedString, Array, LowCardinality, Nullable.

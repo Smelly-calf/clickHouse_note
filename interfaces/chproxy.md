@@ -116,6 +116,7 @@ caches:
         假设通过 ClickHouse-grafana 或者 tabix 构建图表或任何其他网站访问 CH，在不信任的网站传输未加密的密码/数据是个坏主意。在这种场景下必须使用HTTPS访问集群。
 2. users: 
     - 配置输入用户`name`和集群user`to_user`的映射， 可以限制单个应用的`max_concurrent_queries`。假设两个应用读取CH，CH最大并发查询数4，分摊到一个应用上就是2，即输入用户的`max_concurrent_queries`=集群最大并发查询数/应用数
+<<<<<<< HEAD
     - 证书：请求chproxy必须带携带在此处被授权的证书，可通过BasicAuth或用户名/密码字符串传递证书。 
         
 3. clusters:
@@ -123,6 +124,14 @@ caches:
     - balance: 每个集群的请求会被均衡到集群中各个副本和节点，采用 round-robin 和 least-load 方法来负载均衡，即轮询选择最小负载的节点；
     - node priority: 一段时间请求不成功的节点会自动降低优先级，新的请求会被发送到「最小负载的副本中」「最小负载的健康节点」；
     - check healthy: chproxy会定期检查节点可用性，执行节点维护：不可用节点自动从集群中排除，再次可用时会再加到集群中，无需从ClickHouse配置中删除该节点。
+=======
+    - 证书：请求chproxy必须带携带在此处被授权的证书，可通过BasicAuth或用户名/密码字符串传递证书。     
+3. clusters:
+    - cluster name/nodes : chproxy 可以配置多个集群，每个集群必须有 name 和 nodes/replicas 列表；
+    - balance: 每个集群的请求会被均衡到集群中各个副本和节点，采用 round-robin 和 least-load 方法来负载均衡，即轮询选择最小负载的节点；
+    - node priority: 一段时间请求不成功的节点会自动降低优先级，新的请求会被发送到「最小负载的副本中」「最小负载的健康节点」；
+    - check healthy(故障剔除): chproxy会定期检查节点可用性，执行节点维护：不可用节点自动从集群中排除，再次可用时会再加到集群中，无需从ClickHouse配置中删除该节点。
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
     - kill query: 超过 `max_execution_time` 的查询会被 chproxy 自动 kill，使用 `default` 用户 kill queries，可在`kill_query_user`重写用户。
     - chproxy 配置中没有指定 `users`，默认使用无限制的default用户。
 4. caching:
@@ -169,7 +178,10 @@ users:
   - name: "report"
     to_cluster: "stats-aggregate"
     to_user: "readonly"
+<<<<<<< HEAD
 
+=======
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
     max_concurrent_queries: 6
     max_execution_time: 1m
 
@@ -188,7 +200,11 @@ clusters:
     ]
     users:
       - name: "readonly"
+<<<<<<< HEAD
         password: "9a27718297218c3757c365d357d13f49d0fa3065"
+=======
+        password: "readonly"
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
 
 caches:
   - name: "shortterm"
@@ -197,10 +213,17 @@ caches:
     expire: 130s
 ```
  
+<<<<<<< HEAD
 也可以是副本with nodes:
 ```
 clusters:
     - name: "replicaWithNodes"
+=======
+也可以是shard副本列表:
+```
+clusters:
+    - name: "shard1"
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
       replicas:
         - name: "replica1"
           nodes: ["localhost:8123"]
@@ -210,16 +233,24 @@ clusters:
         -name: "default"
 ```
 一个在线 sha1 加密工具：https://www.googlespeed.cn/sha/
+<<<<<<< HEAD
 
+=======
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
 创建 readonly 用户 with DOUBLE_SHA1_HASH：
 ```
 echo -ne "CREATE USER readonly ON CLUSTER perftest_3shards_1replicas IDENTIFIED WITH DOUBLE_SHA1_HASH BY '9a27718297218c3757c365d357d13f49d0fa3065' " | curl 'http://localhost:8123/' --data-binary @-
 
+<<<<<<< HEAD
 # 测试
 echo 'SELECT 1' | curl 'http://localhost:8123/?user=readonly&password=9a27718297218c3757c365d357d13f49d0fa3065' --data-binary @-
 
 # 发现使用 double_sha1_hash 通不过，改为 PLAINTEXT_PASSWORD
 echo -ne "ALTER USER readonly ON CLUSTER perftest_3shards_1replicas IDENTIFIED WITH PLAINTEXT_PASSWORD BY '9a27718297218c3757c365d357d13f49d0fa3065'" | curl "http://localhost:8123/" --data-binary @-
+=======
+# 使用 CHProxy 访问
+echo 'SELECT 1' | curl 'http://localhost:9090/?user=report' --data-binary @-
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
 ```
 
 #### 2. 启动
@@ -276,3 +307,9 @@ Q&A：
 
     原因：使用 localhost 访问的正确配置：`allowed_networks=[127.0.0.0/24]`
 
+<<<<<<< HEAD
+=======
+#### todo:
+CHProxy 支持用户指定 shard 写本地表
+
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885

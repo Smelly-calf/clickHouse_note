@@ -16,7 +16,11 @@ MergeTree家族的引擎们设计的主旨是将大量数据快速插入表中�
     如有必要，可以在表中设置数据采样方法。
     
     
+<<<<<<< HEAD
 #### 建表
+=======
+### 建表
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
 ```
 CREATE TABLE [IF NOT EXISTS] table_name [ON CLUSTER cluster_name]
 (
@@ -53,7 +57,11 @@ ORDER BY expr
     说明：1. 分区：使用`toYYYYMM`达到按月分区的目的，2. 采样：对 UserID 做 hash 作为采样，相当于对 CounterID 和 EventDate 作了伪随机，CH 会 平均伪随机 的返回 User 子集的样本。 3. `index_granularity`默认就是8192，此处可省略。
     
     
+<<<<<<< HEAD
 #### 数据存储
+=======
+### 数据存储
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
 一个表由 <em>按主键排序好</em> 的 <em>data parts</em> 组成。
 
 - data part：插入数据时会创建独立的 data part，每个 data part 按主键以字典形式排序。以 `(CounterID, Date)` 主键为例，part中的数据先按照 `CounterID` 排序，`CounterId`相同的按`Date`排序。
@@ -72,6 +80,10 @@ ORDER BY expr
 
 一个数据存储测试：
 ```
+<<<<<<< HEAD
+=======
+$ docker run -d --name oneck -p 9009:9000 -v $HOME/oneck/etc:/etc/clickhouse-server -v $HOME/oneck/data:/var/lib/clickhouse yandex/clickhouse-server:20.6.10
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
 $ docker exec -it testck_clickhouse01_1 clickhouse-client -m
 >
 CREATE TABLE mr_test ON CLUSTER 'perftest_3shards_1replicas'
@@ -100,6 +112,7 @@ INSERT INTO mr_test VALUES(12,'2020-12-01 00:00:00'),(13,'2020-12-02 00:00:00'),
 ```
 看看数据存储 `/var/lib/clickhouse下：/data/default/mr_test`
 ![data_part](illstration/data_part.png) 
+<<<<<<< HEAD
 不同分区（此处是月份）的数据分为了两个 data part 存储。
 
 分区里面的数据：
@@ -108,6 +121,22 @@ INSERT INTO mr_test VALUES(12,'2020-12-01 00:00:00'),(13,'2020-12-02 00:00:00'),
 - count.txt：该 part 行数
  
 #### 主键和索引
+=======
+
+不同分区（此处是月份）的数据分为了两个 data part 存储。
+
+分区下包含的文件：
+![a_data_part_data](illstration/partition_files.png)
+
+主要文件说明：
+- primary.idx //mark值和主键元组的映射
+- count.txt //part行数
+- minmax_Date.idx // 分区键最大最小值
+- xx.bin //列向量
+- xx.mrk2 //mark值和列的映射 
+ 
+### 主键和索引
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
 CH <em>根据主键来建立索引 marks</em>，索引粒度由 `index_granularity`和`index_granularity_bytes`设置，表示两个索引之间的行数/字节数。
 
 如下图是主键为 (CounterID, Date) 索引粒度为 7 的索引标记图：
@@ -125,7 +154,11 @@ CH <em>根据主键来建立索引 marks</em>，索引粒度由 `index_granulari
 - 稀疏索引可以处理大量的行，因为大多数这种索引都跟计算机的 RAM 是匹配的。
 - CH中不要求主键唯一，即主键可以重复。
 
+<<<<<<< HEAD
 当查询条件是 `Date=3` 时可以命中 marks:[1,10], 原因：CH按列存储数据
+=======
+当查询条件是 `Date=3` 时可以命中 marks:[1,10], 原因：因为 CH 会为 MergeTree 类型的每一列存储索引信息.
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
 
 CH命中索引标记的场景：WHERE/PREWHERE的每个子句(非AND连接的子句)都必须包含 分区键/主键的 以下表达式：
 1. 等值或不等或范围表达式
@@ -139,7 +172,11 @@ CH命中索引标记的场景：WHERE/PREWHERE的每个子句(非AND连接的子
    
 分析CH查询时是否命中索引：开启`force_index_by_date`和`force_primary_key`，以及查询计划 trace log 工具。
 
+<<<<<<< HEAD
 #### 主键的选择
+=======
+#### 选取主键
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
 CH 主键没有列数的要求，需要根据具体的数据结构决定主键列的选择，原则：
 - 提高查询性能：如主键(a,b)添加一列c可以提高查询条件包含c的查询性能
 - 利用主键排序提高数据一致性从而提升压缩性能
@@ -150,10 +187,115 @@ CH 主键没有列数的要求，需要根据具体的数据结构决定主键�
 - 主键可以与sorting键不同但必须以 sorting 建开头；
 - 当表维度很多时应当使用 sorting key 包含所有维度，而主键只保留部分维度列，使用主键定位数据范围排序键排序。
 
+<<<<<<< HEAD
 
+=======
+#### Skipping Indexes
+使用列表达式创建索引，提高查询性能：
+```
+INDEX index_name expr TYPE type(...) GRANULARITY granularity_value
+```
+说明：
+- expr: 列表达式
+- granularity_value: 索引的颗粒大小
+- 索引 type:
+    - primary key 
+    
+      支持的函数子集：equals, notEquals, like, notLike, startsWith, in, notIn, less, greater, lessOrEquals, greaterOrEquals, empty, notEmpty
+      
+      不支持的函数子集：endsWith, multiSearchAny, hasToken 
+    - minmax
+    
+      索引存储表达式的最值
+      
+      不支持的函数：endsWith, multiSearchAny, hasToken ，同 primary key
+    - set(max_rows)
+    
+      存储表达式的唯一值，不超过 max_rows 行
+      
+      支持所有函数
+    - ngrambf_v1(n, size_of_bloom_filter_in_bytes, num_of_hash_functions, random_seed)
+    
+      存储一个布隆过滤器，该布隆过滤器包含数据块中所有ngrams。
+      
+      只对 strings 起作用，优化 equals,like,in 表达式。
+      - n //ngram大小
+      - size_of_bloom_filter_in_bytes //布隆过滤器字节大小
+      - num_of_hash_functions //hash函数个数
+      - random_seed //hash种子
+      
+      支持 endsWith, multiSearchAny
+      
+      不支持 less, greater, lessOrEquals, greaterOrEquals, empty, notEmpty, hasToken
+      
+      特殊：函数参数小于 ngram 大小的常量，不会使用 ngrambf_v1 优化查询。
+    - tokenbf_v1(size_of_bloom_filter_in_bytes, num_of_hash_functions, random_seed)
+    
+      和 ngrambf_v1相同，但存储的是token而不是ngram，token是非字母数字字符分隔的序列
+      
+      不支持 multiSearchAny, less, greater, lessOrEquals, greaterOrEquals, empty, notEmpty
+      
+      支持 hasToken
+    - bloom_filter([false_positive])
+    
+      可选参数false_positive表示从布隆过滤器接收误报的可能性，可能的值在(0,1)区间，默认值是 0.025.
+      
+      支持的数据类型：Int*, UInt*, Float*, Enum, Date, DateTime, String, FixedString, Array, LowCardinality, Nullable.
+      
+      起作用的函数：equals, notEquals, in, notIn, has.
+
+      特殊：布隆过滤器有假阳性校验，对于 bloom_filter, ngrambf_v1, tokenbf_v1 索引类型来说，当表达式结果预期为假不会使用索引优化查询。
+      
+      例如：预期为假的表达式：`NOT s LIKE '%test%'`
+    
+例：
+```
+docker exec -it testck_clickhouse01_1 clickhouse-client -m --send_logs_level=trace
+CREATE TABLE table_name
+(
+    u64 UInt64,
+    i32 Int32,
+    s String,
+    INDEX a (u64 * i32, s) TYPE minmax GRANULARITY 3,
+    INDEX b (u64 * length(s)) TYPE set(1000) GRANULARITY 4
+) ENGINE = MergeTree()
+ORDER BY tuple();
+
+INSERT INTO table_name SELECT rand(1)%10000 AS u64, rand(1)%100 AS i32, toString(rand(1)%10000) AS s from numbers(10000);
+```
+会使用索引的查询，从中看出使用索引中包含的一列也会命中索引，因为 CH 会为 MergeTree 类型的每一列存储索引信息：
+```
+SELECT count() FROM table_name WHERE s < 'z'; 
+SELECT count() FROM table_name WHERE u64 * i32 == 10 AND u64 * length(s) >= 1234;
+```
+
+todo TTL for Columns and Tables
+
+### 小结
+MergeTree 系列引擎是CH功能最强大最健壮的表引擎，
+#### 特性：
+- Primary key 排序存储数据，稀疏索引快速定位数据位置
+- partition 分区
+- sample 采样: 主键必须包含sample key
+
+#### 存储：
+- part
+    - primary.idx // 该part所有index
+    - bin // 数据
+    - 列名.mrk // 每一列的标注
+    - minmax_partition.idx // 最小最大分区键索引 
+
+#### 主键选取和索引：
+todo
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
 
 ##### 今日讨论：
 CK数据块划分跟粒度是否有关？
 
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
     

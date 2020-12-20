@@ -1,6 +1,25 @@
 # ClickHouse 连接
 ## 1. Command-line client
+<<<<<<< HEAD
 本机执行 `clickhouse-client` 进入命令行客户端。可以在命令行添加options/配置文件指定参数。
+=======
+从官网下载 https://repo.clickhouse.tech/tgz/stable/ 同时下载 clickhouse-client-20.6.6.7.tgz，clickhouse-common-static-20.6.6.7.tgz
+
+启动：
+```
+# 用http协议获取所有ck实例列表（账号、密码、集群域名请按实际替换，下同）
+curl -sSL "http://$user:$pwd@httpDomain:$httpPort" -d "SELECT host_address, port FROM system.clusters WHERE cluster != 'system_cluster'"
+ 
+# 下载并安装
+mkdir -p ~/.local/bin && wget -O- http://storage.jd.local/jdolap-deploy/clickhouse-20.6.6.7.tar.xz | tar -x --xz -C ~/.local/bin -f - && echo "export PATH=\$PATH:\$HOME/.local/bin" >> ~/.bashrc && source ~/.bashrc
+ 
+# 随机选一个ck实例，用clickhouse-client连接（IP、端口、账号、密码按实际替换）
+clickhouse client -m -h $ip --port 9600 --user $user --password $pwd 
+# 添加参数 --send_logs_level=trace 可以在客户端看到详细日志，一般情况下可以不加，性能调优时可以加上
+```
+
+进入命令行客户端: 可以在命令行添加options/配置文件指定参数。
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
 
 关于 clickhouse-client Code: 210. DB::NetException: Connection refused (localhost:9000) 问题：
 - config.xml 配置 `<listen_host>::</listen_host>`
@@ -24,7 +43,11 @@
 - `clickhouse-client --param_tuple_in_tuple="(10, ('dt', 10))" -q "SELECT * FROM table WHERE val = {tuple_in_tuple:Tuple(UInt8, Tuple(String, UInt8))}"`
 
 #### Configuring
+<<<<<<< HEAD
 顺序
+=======
+使用配置的顺序:
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
 - 命令行参数｜命令行`--config-file`指定的配置文件
 - 默认配置文件中的值
 

@@ -6,6 +6,16 @@
 - 3.Interfaces // clickhouse接口 -> clickhouse第三方工具
 - 4.Engines // clickhouse MergeTree 系列引擎原理
 ```
+<<<<<<< HEAD
+=======
+
+#### 学习计划进度表
+| 周 | 日期 |大标题 | 小标题 | 进度 |  小结 | 
+| --- | --- | --- | --- | --- | --- |
+| 2020年49周 | 11.30 ~ 12.6 | MergeTree | 存储 | 30% | [MergeTree存储](Engines/MergeTree.md#数据存储) | 
+| 2020年50周 | 12.7 ~ 12.13 | MergeTree | 索引 | 30% | [MergeTree主键和索引](Engines/MergeTree.md#主键和索引) | 
+
+>>>>>>> 47c1de58823bbd7f69c780d0b2e44091caa9f885
 # Clickhouse 笔记
 https://clickhouse.tech/docs/en/
 ## Clickhouse 是什么？
@@ -63,3 +73,4 @@ OLAP 场景的关键特性：
     在“常规”数据库中不会执行此操作，因为在运行简单查询时这没有意义。但是，也有例外：<em>MemSQL使用代码生成来减少处理SQL查询时的延迟。 （比较：分析型DBMS需要优化吞吐量而不是延迟。）</em>
     
     请注意，<em><b>为了提高CPU效率，查询语言必须是声明性的（SQL或MDX），或者至少是向量（J，K）</b></em>。该查询应仅包含隐式循环，<em><b>以便进行优化</b></em>。
+    

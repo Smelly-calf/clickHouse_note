@@ -80,7 +80,7 @@ users:
     cache: "shortterm"
 
 clusters:
-  - name: "stats-aggregate"
+  - name: "stats-aggregate" 
     nodes: [
       "10.10.20.1:8123",
       "10.10.20.2:8123"
@@ -102,6 +102,15 @@ clusters:
       - name: "web"
         password: "****"
 
+  - name: "clusterName"
+    replicas: [
+        {
+          "name": "shard1"
+          "nodes": [
+            "10.10.10.1:8123"
+          ]
+        }
+    ]
 caches:
   - name: "shortterm"
     dir: "/path/to/cache/dir"

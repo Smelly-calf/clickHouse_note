@@ -1,42 +1,58 @@
-ClickHouse集群配置说明
+#### ClickHouse集群部署流程
+1. Config.sh
+   1. rsync defaultdata -> data
+   2. cp $CLUSTER/config.xml -> /data0/jdolap/clickhouse/conf
+   3. cp $CLUSTER/config{i}.xml -> /data{j}/jdolap/clickhouse/conf (例：/data0, /data2, /data4)
+<br></br>
+2. Engine.sh ： wget engine，替换 /data0/jdolap/clickhouse/lib/clickhouse
+   <br></br>
+3. Users.sh : cp $CLUSTER/users.xml -> /data0/jdolap/clickhouse/conf
+   <br></br>
+4. Metrika.sh :
+    1. cp $CLUSTER/metrika{i}.xml -> /data0/jdolap/clickhouse/conf/metrika{i}.xml
+    2. cp $CLUSTER/metrika{i}.xml -> /data{j}/jdolap/clickhouse/conf/
+       <br></br>
+5. Service.sh:
+    1.  rsync defaultdata-> data
+    2. cp $CLUSTER/clickhouse-server{i}.service -> /etc/systemd/system/
+    3. systemctl enable clickhouse-service{i}.service
+       <br></br>
+6. Start.sh:
+    systemctl start clickhouse-service{i}.service
 
-1. 生成 metrika.xml shard/replica
-   
-    例: 3shard3replica
-    
-    ip: 3
-    
-    metrika.xml: 
-        总副本=3*3=9
-        每节点副本=9/3=3
-        每shard3副本分布在3个节点
-   
-2. 生成 users.xml 
-3. 生成 config.xml 
-    
+
+#### 重要配置说明
+1. metrika.xml
+
+   例: 3shard3replica集群
+
+   ip: 3
+
+   分布：
+
+   | | process0 | process1 | process2 |
+       | --- | --- | --- | --- |
+   | ip0 |  shard0副本00 |  shard2副本01 |  shard1副本02 | 
+   | ip1 |  shard1副本00 |  shard0副本01 |  shard2副本02 |
+   | ip2 |  shard2副本00 |  shard1副本01 |  shard0副本02 |
+
+2. config.xml
+
     1. include metrika.xml
     2. include users.xml
-    3. 设置 port:
-         每节点3实例port分布=实例id(从0开始)*100+port
-    4. 设置 disks:
-         每节点3实例disk分布=(实例id+1)*每实例diskCount~(实例id+2)*每实例diskCount
-       
-         例：节点共12个磁盘3实例，除去磁盘0(存储代码)，每实例diskCount=3
-       
-        实例0的3个disk
-       ```
-       <disks>
-           <disk1>
-                <path>/data1/jdolap/clickhouse/data/</path>
-           </disk1>
-           <disk2>
-                <path>/data2/jdolap/clickhouse/data/</path>
-           </disk2>
-           <disk3>
-                <path>/data3/jdolap/clickhouse/data/</path>
-           </disk3>
-       </disks>
-       ```
+    3. 设置 port
+    4. 设置 disks：每个实例磁盘数=总磁盘数/实例个数
+
+       实例0：/data0、/data1
+
+            /data0存储元数据和默认磁盘, /data1是额外磁盘
+
+       实例1：/data2、data3，
+
+       实例3: /data4、data5
+
     5. 设置 disks volumes
-        
-        目前存储策略是 JDOB 单卷多磁盘存储策略。
+
+       策略：JDOB
+
+       一个卷俩磁盘： default 和 /data{ProcessIndex*SingleProcessDiskCount}

@@ -31,9 +31,10 @@ python setup.py install
 # 软连：
 ln -s /usr/local/python2/bin/pip /usr/bin/pip
 ```
+
 使用 pip 安装 ansible
 ```
-pip download ansible==2.2.1.0
+pip download ansible==2.9.15
 # 安装依赖：whl 文件用 pip install 安装，tar.gz解压后进入目录 python setup.py install 
 # 安装顺序参考：https://blog.51cto.com/75368/2141015
 tar zxvf pycparser-2.18.tar.gz
@@ -51,9 +52,9 @@ pip  install  pyasn1-0.4.2-py2.py3-none-any.whl
 tar -zxvf  pycrypto-2.6.1.tar.gz
 pip  install  setuptools-38.2.3-py2.py3-none-any.whl
 tar zxvf PyYAML-3.12.tar.gz
-pip  install  Jinja2-2.8.1-py2.py3-none-any.whl
+pip  install  Jinja2-2.8.1-py2.py3-none-any.whl 
 pip  install  paramiko-2.4.0-py2.py3-none-any.whl
-    
+
 # 最后安装 ansible:
 tar zxvf ansible-2.2.1.0.tar.gz
 cd ansible-2.2.1.0/

@@ -1,21 +1,22 @@
 # clickHouse_note
-学习顺序
-```
-- 1.README   // clickhouse是什么
-- 2.Installation // 简单的3台clickhouse集群搭建
-- 3.Interfaces // clickhouse接口 -> clickhouse第三方工具
-- 4.Engines // clickhouse MergeTree 系列引擎原理
-```
 
-#### 学习计划进度表
-| 周 | 日期 |大标题 | 小标题 | 进度 |  小结 | 
-| --- | --- | --- | --- | --- | --- |
-| 2020年49周 | 11.30 ~ 12.6 | MergeTree | 存储 | 30% | [MergeTree存储](Engines/MergeTree.md#数据存储) | 
-| 2020年50周 | 12.7 ~ 12.13 | MergeTree | 索引 | 30% | [MergeTree主键和索引](Engines/MergeTree.md#主键和索引) | 
-
-# Clickhouse 笔记
 https://clickhouse.tech/docs/en/
-## Clickhouse 是什么？
+
+从0到1掌握ClickHouse
+- [README.md](README.md)  知道clickhouse是面向列的数据管理系统
+- [introduction](introduction)  3台clickhouse server集群搭建
+- [make cluster](make-cluster)  搭建一个3节点的小集群
+- [storage](storage) 了解ClickHouse存储模块
+- [privileges](privileges) 权限模块，包括实体和各种级别的privileges
+- [interfaces](interfaces) clickhouse与第三方工具接口
+- [engines](engines) 学习各种引擎表的使用
+- [source code](source-code) ClickHouse经典源码解读
+- [troubleshooting](trouleshooting) 线上用户问题解决
+- [packages](packages) 软件包
+- [ansible](ansible) ansible运维工具初使用
+- [copier](copier) copier使用
+
+## Clickhouse-面向列的数据管理系统
 通俗来讲，Clickhouse 是一个<em><b>面向列的数据库管理系统</b></em>，用于 <em><b>OLAP：查询的联机分析处理</b></em>。
 
 对于面向行的数据库管理系统来说，一行物理存储在一起。
@@ -71,3 +72,8 @@ OLAP 场景的关键特性：
     
     请注意，<em><b>为了提高CPU效率，查询语言必须是声明性的（SQL或MDX），或者至少是向量（J，K）</b></em>。该查询应仅包含隐式循环，<em><b>以便进行优化</b></em>。
     
+# 记录：
+上次书写地址：[architecture](source-code/day2-architecture.md)
+
+# Q&A
+1. CK数据块划分跟粒度是否有关？

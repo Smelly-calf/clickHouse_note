@@ -23,7 +23,6 @@
 
 #### 重要配置说明
 1. metrika.xml
-
    例: 3shard3replica集群
 
    ip: 3
@@ -37,22 +36,34 @@
    | ip2 |  shard2副本00 |  shard1副本01 |  shard0副本02 |
 
 2. config.xml
-
     1. include metrika.xml
     2. include users.xml
-    3. 设置 port
-    4. 设置 disks：每个实例磁盘数=总磁盘数/实例个数
-
-       实例0：/data0、/data1
-
-            /data0存储元数据和默认磁盘, /data1是额外磁盘
-
-       实例1：/data2、data3，
-
-       实例3: /data4、data5
-
-    5. 设置 disks volumes
-
-       策略：JDOB
-
-       一个卷俩磁盘： default 和 /data{ProcessIndex*SingleProcessDiskCount}
+    3. <listen_host>::</listen_host>
+    4. storage_configuration：
+        1. disks
+            1. 一台物理机多个实例平分磁盘，例如：
+                - 实例0：/data0、/data1 （ /data0存储元数据和数据, /data1只存储数据）
+                - 实例1：/data2、data3
+                - 实例3: /data4、data5
+        2. storage_policy
+           ```xml
+           <jbod>
+             <volumes>
+                <hot_volume>
+                 default
+                </hot_volume>
+                <cold_volume>
+                 other_disks
+                </cold_volume>
+             </volumes>
+           </jbod>
+           ```
+3. zookeeper和macro
+   1. 一般写在metrika.xml文件
+   2. 然后在config.xml需要include incl指定 metrika.xml 中的标签名称，例如
+      ```xml
+      <include_from>metrika1.xml</include_from>
+      <remote_servers incl="clickhouse_remote_servers" />
+      <macros incl="macros" optional="true" />
+      <zookeeper incl="zookeeper-servers" optional="true" />
+      ```
